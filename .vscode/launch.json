@@ -1,0 +1,72 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "amiga",
+            "request": "launch",
+            "name": "Ask for file name",
+            "config": "A500",
+            "program": "",
+            "kickstart": "<Enter path to KICKSTART 1.3 ROM here>"
+        },
+        {
+            "name": "(gdb) Pipe Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "enter program name, for example ${workspaceFolder}/a.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "pipeTransport": {
+                "debuggerPath": "/usr/bin/gdb",
+                "pipeProgram": "<full path to pipe program such as plink.exe>",
+                "pipeArgs": [],
+                "pipeCwd": ""
+            },
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Cake: Debug Script (.NET Tool)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet-cake",
+            "windows": {
+                "program": "dotnet-cake.exe"
+            },
+            "args": [
+                "${workspaceRoot}/build.cake",
+                "--debug",
+                "--verbosity=diagnostic"
+            ],
+            "cwd": "${workspaceRoot}",
+            "stopAtEntry": false,
+            "externalConsole": false,
+            "justMyCode": false
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug",
+            "program": "${workspaceFolder}/<executable file>",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
