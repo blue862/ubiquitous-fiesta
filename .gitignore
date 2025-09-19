@@ -10,3 +10,29 @@ db/sql
 # AssetBundler plugin: generated bundles
 javascripts/bundles
 stylesheets/bundles
+
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+
+# Dependency directories
+package-lock.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
