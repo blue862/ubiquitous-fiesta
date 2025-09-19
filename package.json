@@ -1,0 +1,22 @@
+{
+  "name": "utah-court-lookup",
+  "version": "1.0.0",
+  "description": "Utah court document lookup system",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "test": "node test.js",
+    "build": "echo 'No build step required'"
+  },
+  "keywords": ["court", "document", "lookup", "utah", "legal"],
+  "author": "Ubiquitous Fiesta",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=20.x"
+  }
+}

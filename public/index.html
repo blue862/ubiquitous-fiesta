@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utah Court Document Lookup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .search-form {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d5f4e6;
+            border: 1px solid #27ae60;
+        }
+        .error {
+            background-color: #fadbd8;
+            border: 1px solid #e74c3c;
+        }
+        .case-details {
+            margin-top: 15px;
+        }
+        .case-details h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .case-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .info-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #666;
+        }
+        .parties, .documents {
+            margin-top: 15px;
+        }
+        .party-item, .document-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+        .loading {
+            text-align: center;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Utah Court Document Lookup</h1>
+        
+        <div class="search-form">
+            <div class="form-group">
+                <label for="caseNumber">Case Number:</label>
+                <input type="text" id="caseNumber" placeholder="Enter case number (e.g., 18-11184)" value="18-11184">
+            </div>
+            <button onclick="searchCase()">Search Case</button>
+            
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="partyName">Check if you're in the case (optional):</label>
+                <input type="text" id="partyName" placeholder="Enter your name">
+            </div>
+            <button onclick="checkParty()">Check if I'm in Case</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function searchCase() {
+            const caseNumber = document.getElementById('caseNumber').value.trim();
+            const resultsDiv = document.getElementById('results');
+            
+            if (!caseNumber) {
+                showError('Please enter a case number');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+            
+            try {
+                const response = await fetch(`/api/search/${encodeURIComponent(caseNumber)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showCaseDetails(data.case);
+                } else {
+                    showError(data.message);
+                }
+            } catch (error) {
+                showError('Error searching for case: ' + error.message);
+            }
+        }
+        
+        async function checkParty() {
+            const caseNumber = document.getElementById('caseNumber').value.trim();
+            const partyName = document.getElementById('partyName').value.trim();
+            const resultsDiv = document.getElementById('results');
+            
+            if (!caseNumber || !partyName) {
+                showError('Please enter both case number and your name');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<div class="loading">Checking...</div>';
+            
+            try {
+                const response = await fetch(`/api/check-party/${encodeURIComponent(caseNumber)}/${encodeURIComponent(partyName)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showPartyResult(data);
+                } else {
+                    showError(data.message);
+                }
+            } catch (error) {
+                showError('Error checking party status: ' + error.message);
+            }
+        }
+        
+        function showCaseDetails(caseData) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.className = 'results success';
+            
+            resultsDiv.innerHTML = `
+                <div class="case-details">
+                    <h3>Case Details</h3>
+                    <div class="case-info">
+                        <div class="info-item">
+                            <div class="info-label">Case Number:</div>
+                            <div>${caseData.caseNumber}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Title:</div>
+                            <div>${caseData.title}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Court:</div>
+                            <div>${caseData.court}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">County:</div>
+                            <div>${caseData.county}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Filing Date:</div>
+                            <div>${caseData.filingDate}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Status:</div>
+                            <div>${caseData.status}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Case Type:</div>
+                            <div>${caseData.caseType}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Judge:</div>
+                            <div>${caseData.judge}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="parties">
+                        <h4>Parties:</h4>
+                        ${caseData.parties.map(party => `
+                            <div class="party-item">
+                                <strong>${party.name}</strong> - ${party.type}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="documents">
+                        <h4>Documents:</h4>
+                        ${caseData.documents.map(doc => `
+                            <div class="document-item">
+                                <strong>${doc.name}</strong> - ${doc.type}<br>
+                                <small>Filed: ${doc.filingDate}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function showPartyResult(data) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.className = `results ${data.isParty ? 'success' : 'error'}`;
+            
+            let content = `<h3>${data.message}</h3>`;
+            
+            if (data.case) {
+                content += `
+                    <div class="case-details">
+                        <h4>Case Information:</h4>
+                        <p><strong>Case:</strong> ${data.case.title}</p>
+                        <p><strong>Court:</strong> ${data.case.court}</p>
+                        <p><strong>Status:</strong> ${data.case.status}</p>
+                        
+                        <div class="parties">
+                            <h5>All Parties in Case:</h5>
+                            ${data.case.parties.map(party => `
+                                <div class="party-item">
+                                    <strong>${party.name}</strong> - ${party.type}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            resultsDiv.innerHTML = content;
+        }
+        
+        function showError(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.className = 'results error';
+            resultsDiv.innerHTML = `<h3>Error</h3><p>${message}</p>`;
+        }
+        
+        // Allow Enter key to trigger search
+        document.getElementById('caseNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchCase();
+            }
+        });
+        
+        document.getElementById('partyName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkParty();
+            }
+        });
+    </script>
+</body>
+</html>
