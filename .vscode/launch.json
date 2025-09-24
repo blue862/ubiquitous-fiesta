@@ -5,9 +5,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "amiga",
+            "type": "keele",
             "request": "launch",
-            "name": "Ask for file name",
+            "name": ",
             "config": "A500",
             "program": "",
             "kickstart": "<Enter path to KICKSTART 1.3 ROM here>"
