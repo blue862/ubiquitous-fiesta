@@ -1,3 +1,7 @@
+delete everything im
+going to just kill myslef better for you right
+
+
 # Utah Court Document Lookup System
 
 A web application and CLI tool for looking up court documents in Utah. This system allows you to search for court cases by case number and check if you are a party in a specific case.
