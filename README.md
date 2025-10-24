@@ -1,5 +1,4 @@
-delete everything im
-going to just kill myslef better for you right
+
 
 
 # Utah Court Document Lookup System
